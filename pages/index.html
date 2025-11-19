@@ -44,7 +44,7 @@
                 <span class="logo-text">💕TECH-SISTERS🤖</span>
             </div>
             <ul class="nav-links">
-                <li><a href="index.html">Home</a></li>
+                <li><a href="../index.html">Home</a></li>
                 <li><a href="about.html">About </a></li>
                 <li><a href="services.html">Services</a></li>
                 <li><a href="enquiry.html">Enquiry</a></li>
@@ -64,19 +64,58 @@
             </div>
         </nav>
     </header>
-<!-- Enhanced Date & Time Stamp -->
-    <div id="datestamp">
-        <div class="datetime-container">
-            <div class="day-display" id="dayDisplay"></div>
-            <div class="date-display" id="dateDisplay"></div>
-            <div class="time-display" id="timeDisplay"></div>
-        </div>
-    </div>
+<!-- Real-Time Date & Time Display -->
+<section class="datetime-container">
+<div class="datetime-display">
+<div class="datetime-icon">🕐</div>
+<div class="current-time" id="currentTime">00:00:00</div>
+<div class="current-date" id="currentDate">Loading...</div>
+<div class="timezone" id="timezone">Loading timezone...</div>
+</div>
+</section>
+    
     <!-- Robot Assistant -->
     <div class="robot-assistant">🤖</div>
     <div class="robot-message" id="robotMessage">
         <p>Hi there! I'm Rosie, your TECH-SISTERS assistant! Need help navigating or have questions? Just click on me!</p>
     </div>
+
+    <!-- Chat Button -->
+<button class="chat-button" id="chatButton">🤖</button>
+
+<!-- Chat Window -->
+<div class="chat-window" id="chatWindow">
+  <div class="chat-header">
+    <div class="chat-header-info">
+      <div class="chat-avatar">🤖</div>
+      <div class="chat-title">
+        <h3>TECH-SISTERS Assistant</h3>
+        <div class="chat-status">● Online</div>
+      </div>
+    </div>
+    <button class="chat-close" id="chatClose">×</button>
+  </div>
+  
+  <div class="chat-messages" id="chatMessages">
+    <div class="message bot">
+      <div class="message-avatar">🤖</div>
+      <div class="message-content">
+        Hi! 👋 I'm your TECH-SISTERS assistant! I can help you navigate our website and answer questions about our programs. How can I help you today?
+        <div class="quick-actions">
+          <button class="quick-action-btn" data-action="about">About Us</button>
+          <button class="quick-action-btn" data-action="services">Our Services</button>
+          <button class="quick-action-btn" data-action="programs">Programs</button>
+          <button class="quick-action-btn" data-action="contact">Contact Info</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="chat-input">
+    <input type="text" id="userInput" placeholder="Type your message...">
+    <button id="sendButton">➤</button>
+  </div>
+</div>
 
     <!-- Main Content -->
      <div id="datestamp"></div>
@@ -293,22 +332,37 @@
     </footer>
 
     <script>
-        // Date and Time Stamp Implementation
-        function updateDateTime() {
-            const now = new Date();
-            const options = { 
-                weekday: 'long', 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit',
-                timeZoneName: 'short'
-            };
-            const dateTimeString = now.toLocaleDateString('en-US', options);
-            document.getElementById('datestamp').textContent = `Current Date & Time: ${dateTimeString}`;
-        }
+// Real-Time Clock & Date Update
+function updateDateTime() {
+  const now = new Date();
+  
+  // Format time (24-hour format with seconds)
+  const hours = String(now.getHours()).padStart(2, '0');
+  const minutes = String(now.getMinutes()).padStart(2, '0');
+  const seconds = String(now.getSeconds()).padStart(2, '0');
+  const timeString = `${hours}:${minutes}:${seconds}`;
+  
+  // Format date (Full day, month, date, year)
+  const options = { 
+    weekday: 'long', 
+    year: 'numeric', 
+    month: 'long', 
+    day: 'numeric' 
+  };
+  const dateString = now.toLocaleDateString('en-US', options);
+  
+  // Get timezone
+  const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  
+  // Update DOM
+  document.getElementById('currentTime').textContent = timeString;
+  document.getElementById('currentDate').textContent = dateString;
+  document.getElementById('timezone').textContent = `🌍 ${timezone}`;
+}
+
+// Update immediately and then every second
+updateDateTime();
+setInterval(updateDateTime, 1000);
 
         // Mobile Navigation Toggle
         const hamburger = document.querySelector('.hamburger');
@@ -330,25 +384,201 @@
             });
         });
 
-        // Robot Assistant Toggle
-        const robotAssistant = document.querySelector('.robot-assistant');
-        const robotMessage = document.getElementById('robotMessage');
+        const chatButton = document.getElementById('chatButton');
+const chatWindow = document.getElementById('chatWindow');
+const chatClose = document.getElementById('chatClose');
+const chatMessages = document.getElementById('chatMessages');
+const userInput = document.getElementById('userInput');
+const sendButton = document.getElementById('sendButton');
 
-        function toggleRobotMessage() {
-            robotMessage.classList.toggle('show');
-        }
+// Toggle chat window
+chatButton.addEventListener('click', () => {
+  chatWindow.classList.add('active');
+  userInput.focus();
+});
 
-        robotAssistant.addEventListener('click', toggleRobotMessage);
+chatClose.addEventListener('click', () => {
+  chatWindow.classList.remove('active');
+});
 
-        // Close robot message when clicking outside
-        document.addEventListener('click', (e) => {
-            if (!robotAssistant.contains(e.target) && !robotMessage.contains(e.target)) {
-                robotMessage.classList.remove('show');
-            }
-        });
+// Knowledge base
+const knowledge = {
+  home: {
+    keywords: ['home', 'homepage', 'main', 'start'],
+    response: "I'll take you to our homepage! 🏠 Click here to go home.",
+    link: 'index.html'
+  },
+  about: {
+    keywords: ['about', 'who are you', 'mission', 'vision', 'story', 'what is tech-sisters'],
+    response: "Learn about TECH-SISTERS! 💕 We're a community dedicated to empowering women in technology and robotics. Visit our About page to learn more about our mission and vision.",
+    link: 'about.html'
+  },
+  services: {
+    keywords: ['services', 'what do you offer', 'programs', 'offerings', 'courses'],
+    response: "Check out our amazing services! 🚀 We offer robotics training, coding bootcamps, mentorship programs, and more. Let me take you to our Services page.",
+    link: 'services.html'
+  },
+  robotics: {
+    keywords: ['robotics', 'robot', 'automation', 'ai', 'artificial intelligence'],
+    response: "Our robotics program is amazing! 🤖 We teach everything from basics to advanced robotics and AI. Check our Services page for more details.",
+    link: 'services.html'
+  },
+  coding: {
+    keywords: ['coding', 'programming', 'code', 'bootcamp', 'learn to code'],
+    response: "Our coding bootcamps are perfect for beginners and advanced learners! 💻 We cover Python, JavaScript, web development, and more. Visit our Services page.",
+    link: 'services.html'
+  },
+  mentorship: {
+    keywords: ['mentorship', 'mentor', 'guidance', 'support', 'coaching'],
+    response: "Our mentorship program connects you with experienced women in tech! 👩‍💻 Get personalized guidance and career support. Learn more on our Services page.",
+    link: 'services.html'
+  },
+  enquiry: {
+    keywords: ['enquiry', 'inquiry', 'question', 'ask', 'register', 'sign up', 'join'],
+    response: "Ready to join us? 📝 Fill out our enquiry form and we'll get back to you soon! Let me take you there.",
+    link: 'enquiry.html'
+  },
+  gallery: {
+    keywords: ['gallery', 'photos', 'pictures', 'images', 'events', 'workshops'],
+    response: "Check out our amazing gallery! 📸 See photos from our workshops, events, and the incredible work our sisters are doing in tech.",
+    link: 'Gallery.html'
+  },
+  contact: {
+    keywords: ['contact', 'reach', 'email', 'phone', 'address', 'location', 'get in touch'],
+    response: "Want to get in touch? 📞 Visit our Contact page for our email, phone number, and office location. We'd love to hear from you!",
+    link: 'contact.html'
+  },
+  help: {
+    keywords: ['help', 'support', 'assistance', 'what can you do'],
+    response: "I can help you navigate the TECH-SISTERS website! I can tell you about our services, programs, how to contact us, and more. Just ask me anything like 'Tell me about your programs' or 'How do I join?'",
+    link: null
+  },
+  greetings: {
+    keywords: ['hi', 'hello', 'hey', 'greetings', 'good morning', 'good afternoon'],
+    response: "Hello! 👋 Welcome to TECH-SISTERS! How can I help you explore our programs today?",
+    link: null
+  }
+};
+
+// Process user message
+function processMessage(message) {
+  const lowerMessage = message.toLowerCase();
+  
+  // Check for matches
+  for (const [key, data] of Object.entries(knowledge)) {
+    if (data.keywords.some(keyword => lowerMessage.includes(keyword))) {
+      return data;
+    }
+  }
+  
+  // Default response
+  return {
+    response: "I'm here to help! I can tell you about our services, programs, how to contact us, or help you navigate the website. Try asking about 'services', 'programs', 'contact', or 'gallery'!",
+    link: null
+  };
+}
+
+// Add message to chat
+function addMessage(text, isBot = true, link = null) {
+  const messageDiv = document.createElement('div');
+  messageDiv.className = `message ${isBot ? 'bot' : 'user'}`;
+  
+  const avatar = document.createElement('div');
+  avatar.className = 'message-avatar';
+  avatar.textContent = isBot ? '🤖' : '👩';
+  
+  const content = document.createElement('div');
+  content.className = 'message-content';
+  content.textContent = text;
+  
+  if (link && isBot) {
+    const linkButton = document.createElement('div');
+    linkButton.style.marginTop = '10px';
+    const btn = document.createElement('button');
+    btn.className = 'quick-action-btn';
+    btn.textContent = '➜ Go to page';
+    btn.onclick = () => {
+      window.parent.location.href = link;
+    };
+    linkButton.appendChild(btn);
+    content.appendChild(linkButton);
+  }
+  
+  if (isBot) {
+    messageDiv.appendChild(avatar);
+    messageDiv.appendChild(content);
+  } else {
+    messageDiv.appendChild(content);
+    messageDiv.appendChild(avatar);
+  }
+  
+  chatMessages.appendChild(messageDiv);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+// Show typing indicator
+function showTyping() {
+  const typingDiv = document.createElement('div');
+  typingDiv.className = 'message bot';
+  typingDiv.id = 'typing';
+  
+  const avatar = document.createElement('div');
+  avatar.className = 'message-avatar';
+  avatar.textContent = '🤖';
+  
+  const indicator = document.createElement('div');
+  indicator.className = 'typing-indicator';
+  indicator.innerHTML = '<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>';
+  
+  typingDiv.appendChild(avatar);
+  typingDiv.appendChild(indicator);
+  chatMessages.appendChild(typingDiv);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+function removeTyping() {
+  const typing = document.getElementById('typing');
+  if (typing) typing.remove();
+}
+
+// Send message
+function sendMessage() {
+  const message = userInput.value.trim();
+  if (!message) return;
+  
+  // Add user message
+  addMessage(message, false);
+  userInput.value = '';
+  
+  // Show typing
+  showTyping();
+  
+  // Process and respond
+  setTimeout(() => {
+    removeTyping();
+    const response = processMessage(message);
+    addMessage(response.response, true, response.link);
+  }, 1000);
+}
+
+// Event listeners
+sendButton.addEventListener('click', sendMessage);
+userInput.addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') sendMessage();
+});
+
+// Quick action buttons
+chatMessages.addEventListener('click', (e) => {
+  if (e.target.classList.contains('quick-action-btn')) {
+    const action = e.target.getAttribute('data-action');
+    userInput.value = action;
+    sendMessage();
+  }
+});
 
         // Floating hearts animation delay
-        document.querySelectorAll('.floating-heart').forEach((heart, index) => {
+        docu
+        ment.querySelectorAll('.floating-heart').forEach((heart, index) => {
             heart.style.animationDelay = `${index * 2}s`;
         });
 
@@ -528,4 +758,6 @@
     </script>
 </body>
 </html>
+
+
 
